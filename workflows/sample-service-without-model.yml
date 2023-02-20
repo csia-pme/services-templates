@@ -1,0 +1,96 @@
+# Documentation: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses
+# TODO: 1. CHANGE THE NAME AND THE RUN NAME
+name: sample_service_workflow
+run-name: sample_service workflow
+
+# Allow one concurrent deployment
+concurrency:
+  # TODO: 2. CHANGE THE GROUP NAME
+  group: "sample-service"
+  cancel-in-progress: true
+
+on:
+  push:
+    paths:
+      - .github/actions/build-and-push-docker-image-to-github/action.yml
+      - .github/actions/execute-command-on-kubernetes-cluster/action.yml
+      - .github/actions/test-python-app/action.yml
+      # TODO: 3. CHANGE THE WORKFLOW NAME
+      - .github/workflows/sample-service.yml
+      # TODO: 4. CHANGE THE PATH TO THE PYTHON APP
+      - services/sample_service/**/*
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Lint Python app
+        uses: ./.github/actions/lint-python-app
+        with:
+          # TODO: 5. CHANGE THE PATH TO THE PYTHON APP
+          python-app-path: ./services/sample_service
+
+      - name: Test Python app
+        uses: ./.github/actions/test-python-app
+        with:
+          # TODO: 6. CHANGE THE PATH TO THE PYTHON APP
+          python-app-path: ./services/sample_service
+
+      - name: Build and push Docker image to GitHub
+        id: build-and-push-docker-image-to-github
+        # Only run on main
+        if: github.ref == 'refs/heads/main'
+        uses: ./.github/actions/build-and-push-docker-image-to-github
+        with:
+          docker-registry-username: ${{ github.actor }}
+          docker-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          # TODO: 7. CHANGE THE DOCKER IMAGE NAME
+          docker-image-name: ${{ github.repository }}-sample-service
+          # TODO: 8. CHANGE THE PATH TO THE DOCKER IMAGE CONTEXT
+          docker-image-context: ./services/sample_service
+
+      - name: Prepare configuration files with secrets from GitHub Secrets
+        # Only run on main
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        # TODO: 9. CHANGE THE PATH TO THE KUBERNETES CONFIGURATION FILES
+        working-directory: services/sample_service/kubernetes
+        env:
+          ENVIRONMENT: production
+          LOG_LEVEL: info
+          ENGINE_URL: https://engine-csia-pme.kube.isc.heia-fr.ch
+          # TODO: 10. CHANGE THE URL OF THE SAMPLE SERVICE
+          SERVICE_URL: https://sample-service-csia-pme.kube.isc.heia-fr.ch
+        run: |
+          # TODO: 11. CHANGE THE NAME OF THE CONFIGURATION FILES
+          # Set sample_service version
+          docker_image_tags=(${{ steps.build-and-push-docker-image-to-github.outputs.docker-image-tags }})
+          docker_image_sha_tag="${docker_image_tags[1]}"
+          yq ".spec.template.spec.containers[0].image = \"$docker_image_sha_tag\"" sample-service.stateful.yml > new-sample-service.stateful.yml && mv new-sample-service.stateful.yml sample-service.stateful.yml
+
+          # Set sample_service configuration
+          yq '.data = (.data | to_entries | map({"key": .key, "value": "${" + .key + "}"}) | from_entries)' sample-service.config-map.yml | envsubst > new-sample-service.config-map.yml && mv new-sample-service.config-map.yml sample-service.config-map.yml
+
+      # TODO: 12. CHANGE THE NAME OF THE ACTION
+      - name: Deploy sample_service on the Kubernetes cluster
+        # Only run on main
+        if: github.ref == 'refs/heads/main'
+        uses: ./.github/actions/execute-command-on-kubernetes-cluster
+        with:
+          kube-config: ${{ secrets.KUBE_CONFIG }}
+          kube-namespace: csia-pme-prod
+          # TODO: 13. CHANGE THE KUBERNETES CONTEXT
+          kubectl-context: ./services/sample_service/kubernetes
+          kubectl-args: |
+            # TODO: 14. CHANGE THE PATH TO THE KUBERNETES CONFIGURATION FILES
+            apply \
+              -f sample-service.config-map.yml \
+              -f sample-service.stateful.yml \
+              -f sample-service.service.yml \
+              -f sample-service.ingress.yml

@@ -9,4 +9,7 @@ metadata:
 data:
   ENVIRONMENT: development
   LOG_LEVEL: debug
-  ENGINE_URL: http://localhost:8000
+  ENGINE_URL: http://engine-service:8000
+  # TODO: 3. CHANGE THE SERVICE URL 
+  # (the port must be the same as in the sample-service.service.yml and unused by other services)
+  SERVICE_URL: http://sample-service-service:8080

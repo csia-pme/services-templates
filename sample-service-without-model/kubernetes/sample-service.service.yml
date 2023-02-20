@@ -7,9 +7,10 @@ spec:
   type: LoadBalancer
   ports:
     - name: http
-      port: 8383
+      # TODO: 2. CHANGE THE PORT (must be the same as in the sample-service.config-map.yml)
+      port: 8080
       targetPort: 80
       protocol: TCP
   selector:
-    # TODO: 2. CHANGE THE APP LABEL
+    # TODO: 3. CHANGE THE APP LABEL
     app: sample-service

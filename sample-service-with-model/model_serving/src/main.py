@@ -32,11 +32,11 @@ class MyService(Service):
 
     def __init__(self):
         super().__init__(
-            # TODO: 3. CHANGE THE SERVICE NAME, SLUG AND URL
+            # TODO: 3. CHANGE THE SERVICE NAME AND SLUG
             name="Sample Service",
             slug="sample-service",
             url=settings.service_url,
-            summary=api_description,
+            summary=api_summary,
             description=api_description,
             status=ServiceStatus.AVAILABLE,
             # TODO: 4. CHANGE THE INPUT AND OUTPUT FIELDS
@@ -47,8 +47,11 @@ class MyService(Service):
                 FieldDescription(name="result", type=[FieldDescriptionType.APPLICATION_JSON]),
             ]
         )
+        
+        # TODO: 5. INITIALIZE THE MODEL (BY IMPORTING IT FROM A FILE)
+        self.model = ...
 
-    # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
+    # TODO: 6. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     async def process(self, data):
         # NOTE that the data is a dictionary with the keys being the field names set in the data_in_fields
         raw = data["image"]
@@ -60,13 +63,16 @@ class MyService(Service):
         }
 
 
-# TODO: 6. CHANGE THE API DESCRIPTION
+# TODO: 7. CHANGE THE API DESCRIPTION
 api_description = """
 Sample service bla bla bla...
 """
+api_summary = """
+Sample service
+"""
 
 # Define the FastAPI application with information
-# TODO: 7. CHANGE THE API TITLE, VERSION, CONTACT AND LICENSE
+# TODO: 8. CHANGE THE API TITLE, VERSION, CONTACT AND LICENSE
 app = FastAPI(
     title="Average Shade API.",
     description=api_description,
@@ -80,11 +86,10 @@ app = FastAPI(
         "tagsSorter": "alpha",
         "operationsSorter": "method",
     },
-    # TODO: Add license information
-    # license_info={
-    #     "name": "",
-    #     "url": "",
-    # },
+    license_info={
+        "name": "GNU Affero General Public License v3.0 (GNU AGPLv3)",
+        "url": "https://choosealicense.com/licenses/agpl-3.0/",
+    },
 )
 
 # Include routers from other files

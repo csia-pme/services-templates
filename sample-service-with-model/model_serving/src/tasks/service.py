@@ -198,7 +198,7 @@ class TasksService:
                 file_extension = get_extension(field_type)
 
                 key = await self.storage.upload(
-                    data.encode(),
+                    data,
                     file_extension,
                     TasksService.current_task.s3_region,
                     TasksService.current_task.s3_secret_access_key,

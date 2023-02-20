@@ -32,11 +32,11 @@ class MyService(Service):
 
     def __init__(self):
         super().__init__(
-            # TODO: 3. CHANGE THE SERVICE NAME, SLUG AND URL
+            # TODO: 3. CHANGE THE SERVICE NAME AND SLUG
             name="Sample Service",
             slug="sample-service",
             url=settings.service_url,
-            summary=api_description,
+            summary=api_summary,
             description=api_description,
             status=ServiceStatus.AVAILABLE,
             # TODO: 4. CHANGE THE INPUT AND OUTPUT FIELDS
@@ -60,9 +60,12 @@ class MyService(Service):
         }
 
 
-# TODO: 6. CHANGE THE API DESCRIPTION
+# TODO: 6. CHANGE THE API DESCRIPTION AND SUMMARY
 api_description = """
 Sample service bla bla bla...
+"""
+api_summary = """
+Sample service
 """
 
 # Define the FastAPI application with information
@@ -80,11 +83,10 @@ app = FastAPI(
         "tagsSorter": "alpha",
         "operationsSorter": "method",
     },
-    # TODO: Add license information
-    # license_info={
-    #     "name": "",
-    #     "url": "",
-    # },
+    license_info={
+        "name": "GNU Affero General Public License v3.0 (GNU AGPLv3)",
+        "url": "https://choosealicense.com/licenses/agpl-3.0/",
+    },
 )
 
 # Include routers from other files

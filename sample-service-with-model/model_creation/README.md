@@ -1,3 +1,3 @@
-# digit_recognition - Model creation
+# sample_service_with_model - Model creation
 
-_Check the [related documentation](../../../docs/services/digit-recognition.md#model-creation) for more information._
+_Check the [related documentation](../../docs/services/sample_service_with_model.md) for more information._
