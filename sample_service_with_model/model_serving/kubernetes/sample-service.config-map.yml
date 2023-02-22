@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # TODO: 1. CHANGE THE NAME OF THE CONFIG MAP
+  name: sample-service-config
+  labels:
+    # TODO: 2. CHANGE THE APP LABEL
+    app: sample-service
+data:
+  ENVIRONMENT: development
+  LOG_LEVEL: debug
+  ENGINE_URL: http://engine-service:8080
+  # TODO: 3. CHANGE THE SERVICE URL 
+  # (the port must be the same as in the sample-service.service.yml and unused by other services)
+  SERVICE_URL: http://sample-service-service:8001
