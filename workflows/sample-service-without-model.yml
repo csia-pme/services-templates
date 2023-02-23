@@ -1,7 +1,7 @@
 # Documentation: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses
 # TODO: 1. CHANGE THE NAME AND THE RUN NAME
-name: sample_service_workflow
-run-name: sample_service workflow
+name: sample-service_workflow
+run-name: sample-service workflow
 
 # Allow one concurrent deployment
 concurrency:
@@ -18,7 +18,7 @@ on:
       # TODO: 3. CHANGE THE WORKFLOW NAME
       - .github/workflows/sample-service.yml
       # TODO: 4. CHANGE THE PATH TO THE PYTHON APP
-      - services/sample_service/**/*
+      - services/sample-service/**/*
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,13 +34,13 @@ jobs:
         uses: ./.github/actions/lint-python-app
         with:
           # TODO: 5. CHANGE THE PATH TO THE PYTHON APP
-          python-app-path: ./services/sample_service
+          python-app-path: ./services/sample-service
 
       - name: Test Python app
         uses: ./.github/actions/test-python-app
         with:
           # TODO: 6. CHANGE THE PATH TO THE PYTHON APP
-          python-app-path: ./services/sample_service
+          python-app-path: ./services/sample-service
 
       - name: Build and push Docker image to GitHub
         id: build-and-push-docker-image-to-github
@@ -53,14 +53,14 @@ jobs:
           # TODO: 7. CHANGE THE DOCKER IMAGE NAME
           docker-image-name: ${{ github.repository }}-sample-service
           # TODO: 8. CHANGE THE PATH TO THE DOCKER IMAGE CONTEXT
-          docker-image-context: ./services/sample_service
+          docker-image-context: ./services/sample-service
 
       - name: Prepare configuration files with secrets from GitHub Secrets
         # Only run on main
         if: github.ref == 'refs/heads/main'
         shell: bash
         # TODO: 9. CHANGE THE PATH TO THE KUBERNETES CONFIGURATION FILES
-        working-directory: services/sample_service/kubernetes
+        working-directory: services/sample-service/kubernetes
         env:
           ENVIRONMENT: production
           LOG_LEVEL: info
@@ -69,16 +69,16 @@ jobs:
           SERVICE_URL: https://sample-service-csia-pme.kube.isc.heia-fr.ch
         run: |
           # TODO: 11. CHANGE THE NAME OF THE CONFIGURATION FILES
-          # Set sample_service version
+          # Set sample-service version
           docker_image_tags=(${{ steps.build-and-push-docker-image-to-github.outputs.docker-image-tags }})
           docker_image_sha_tag="${docker_image_tags[1]}"
           yq ".spec.template.spec.containers[0].image = \"$docker_image_sha_tag\"" sample-service.stateful.yml > new-sample-service.stateful.yml && mv new-sample-service.stateful.yml sample-service.stateful.yml
 
-          # Set sample_service configuration
+          # Set sample-service configuration
           yq '.data = (.data | to_entries | map({"key": .key, "value": "${" + .key + "}"}) | from_entries)' sample-service.config-map.yml | envsubst > new-sample-service.config-map.yml && mv new-sample-service.config-map.yml sample-service.config-map.yml
 
       # TODO: 12. CHANGE THE NAME OF THE ACTION
-      - name: Deploy sample_service on the Kubernetes cluster
+      - name: Deploy sample-service on the Kubernetes cluster
         # Only run on main
         if: github.ref == 'refs/heads/main'
         uses: ./.github/actions/execute-command-on-kubernetes-cluster
@@ -86,7 +86,7 @@ jobs:
           kube-config: ${{ secrets.KUBE_CONFIG }}
           kube-namespace: csia-pme-prod
           # TODO: 13. CHANGE THE KUBERNETES CONTEXT
-          kubectl-context: ./services/sample_service/kubernetes
+          kubectl-context: ./services/sample-service/kubernetes
           kubectl-args: |
             # TODO: 14. CHANGE THE PATH TO THE KUBERNETES CONFIGURATION FILES
             apply \
