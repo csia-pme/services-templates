@@ -67,8 +67,8 @@ jobs:
           ENGINE_URL: https://engine-csia-pme.kube.isc.heia-fr.ch
           # TODO: 10. CHANGE THE URL OF THE SAMPLE SERVICE
           SERVICE_URL: https://sample-service-csia-pme.kube.isc.heia-fr.ch
+        # TODO: 11. CHANGE THE NAME OF THE CONFIGURATION FILES
         run: |
-          # TODO: 11. CHANGE THE NAME OF THE CONFIGURATION FILES
           # Set sample-service version
           docker_image_tags=(${{ steps.build-and-push-docker-image-to-github.outputs.docker-image-tags }})
           docker_image_sha_tag="${docker_image_tags[1]}"
@@ -87,8 +87,8 @@ jobs:
           kube-namespace: csia-pme-prod
           # TODO: 13. CHANGE THE KUBERNETES CONTEXT
           kubectl-context: ./services/sample-service/kubernetes
+          # TODO: 14. CHANGE THE PATH TO THE KUBERNETES CONFIGURATION FILES
           kubectl-args: |
-            # TODO: 14. CHANGE THE PATH TO THE KUBERNETES CONFIGURATION FILES
             apply \
               -f sample-service.config-map.yml \
               -f sample-service.stateful.yml \

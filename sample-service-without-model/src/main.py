@@ -12,6 +12,7 @@ from common_code.service.service import ServiceService
 from common_code.storage.service import StorageService
 from common_code.tasks.controller import router as tasks_router
 from common_code.tasks.service import TasksService
+from common_code.tasks.models import TaskData
 from common_code.service.models import Service, FieldDescription
 from common_code.service.enums import ServiceStatus, FieldDescriptionType
 
@@ -22,8 +23,8 @@ settings = get_settings()
 
 
 class MyService(Service):
+    # TODO: 2. CHANGE THIS DESCRIPTION
     """
-    TODO: 2. CHANGE THIS DESCRIPTION
     Sample service model
     """
 
@@ -51,12 +52,16 @@ class MyService(Service):
     # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     async def process(self, data):
         # NOTE that the data is a dictionary with the keys being the field names set in the data_in_fields
-        raw = data["image"]
+        raw = data["image"].data
+        input_type = data["image"].type
         # ... do something with the raw data
 
         # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
         return {
-            "result": {}
+            "result": TaskData(
+                data=...,
+                type=FieldDescriptionType.APPLICATION_JSON
+            )
         }
 
 
